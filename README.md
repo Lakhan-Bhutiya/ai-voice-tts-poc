@@ -57,6 +57,9 @@ Open http://127.0.0.1:8000
   emotion tags.
 - In-browser playback + WAV download
 
+> **Frontend developer?** See **[FRONTEND.md](FRONTEND.md)** for a focused
+> integration guide with copy-paste JS/React examples.
+
 ## API (for frontend integration)
 
 Base URL: `http://localhost:8000`. **CORS is open** (`*`), so a frontend on any
