@@ -1,0 +1,14 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Secrets
+.env
+
+# Local model weights (312 MB — downloaded via README, exceeds GitHub's limit)
+models/
+
+# Runtime / generated
+server.log
+*.wav

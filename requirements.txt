@@ -1,0 +1,13 @@
+# Web backend
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+httpx==0.28.1
+python-dotenv==1.0.1
+
+# Local TTS (Kokoro) + audio
+kokoro
+soundfile
+numpy
+
+# PyTorch: install the CPU-only wheel separately so it doesn't pull CUDA:
+#   uv pip install torch --index-url https://download.pytorch.org/whl/cpu
