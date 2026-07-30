@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Voice — Human-like TTS POC</title>
+<style>
+  :root { --bg:#0e0f1a; --panel:#1a1c2e; --accent:#7c5cff; --accent2:#46e0c8; --text:#e8e9f3; --muted:#9aa0b4; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:'Segoe UI',system-ui,sans-serif; background:radial-gradient(1200px 600px at 70% -10%, #25264a, var(--bg)); color:var(--text); min-height:100vh; }
+  .wrap { max-width:780px; margin:0 auto; padding:40px 20px 80px; }
+  h1 { font-size:28px; margin:0 0 4px; }
+  h1 span { background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .sub { color:var(--muted); margin:0 0 28px; font-size:14px; }
+  .card { background:var(--panel); border:1px solid #2a2d45; border-radius:16px; padding:22px; box-shadow:0 10px 40px rgba(0,0,0,.35); }
+  label { display:block; font-size:13px; color:var(--muted); margin:16px 0 6px; font-weight:600; letter-spacing:.02em; }
+  textarea, select, input { width:100%; background:#12131f; border:1px solid #2f3354; color:var(--text); border-radius:10px; padding:12px 14px; font-size:15px; font-family:inherit; }
+  textarea { resize:vertical; min-height:120px; }
+  .row { display:flex; gap:14px; }
+  .row > div { flex:1; }
+  .count { float:right; font-size:12px; color:var(--muted); }
+  button { margin-top:22px; width:100%; padding:14px; border:none; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer;
+           background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#0e0f1a; transition:transform .08s, opacity .2s; }
+  button:hover:not(:disabled) { transform:translateY(-1px); }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  button.ghost { width:auto; margin-top:10px; padding:9px 16px; font-size:14px; font-weight:600;
+                 background:transparent; color:var(--accent2); border:1px solid #34386083; }
+  button.ghost:hover:not(:disabled) { border-color:var(--accent2); background:#1a2230; }
+  button.ghost .hint { color:var(--muted); }
+  .result { margin-top:22px; display:none; }
+  .result.show { display:block; }
+  audio { width:100%; margin-top:8px; }
+  .dl { display:inline-block; margin-top:12px; color:var(--accent2); text-decoration:none; font-size:14px; font-weight:600; }
+  .err { color:#ff7a7a; font-size:14px; margin-top:14px; white-space:pre-wrap; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+  .chip { background:#222542; border:1px solid #34386083; color:var(--muted); padding:6px 12px; border-radius:20px; font-size:13px; cursor:pointer; }
+  .chip:hover { color:var(--text); border-color:var(--accent); }
+  .hint { font-weight:400; color:#717691; text-transform:none; letter-spacing:0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span>AI Voice</span> — Human-like TTS</h1>
+  <p class="sub">Powered by the local <strong>Kokoro</strong> model · runs on-device, no TTS API · proof of concept</p>
+
+  <div class="card">
+    <label>Text to speak <span class="count"><span id="count">0</span>/2000</span></label>
+    <textarea id="text" maxlength="2000" placeholder="Type something for the voice to say...">Hey there! This is a quick demo of human-like speech generation. Pretty natural, right?</textarea>
+    <button id="enhance" class="ghost">✨ Enhance with AI <span class="hint">— polish pacing &amp; punctuation for a natural read</span></button>
+
+    <div class="row">
+      <div>
+        <label>Voice</label>
+        <select id="voiceId"><option value="af_heart">Heart (US, female)</option></select>
+      </div>
+      <div>
+        <label>Speed <span class="hint" id="speedVal">1.0×</span></label>
+        <input id="speed" type="range" min="0.5" max="2" step="0.1" value="1" />
+      </div>
+    </div>
+
+    <button id="go">Generate speech</button>
+
+    <div class="result" id="result">
+      <audio id="player" controls></audio><br>
+      <a class="dl" id="download" download="speech.wav">⬇ Download audio</a>
+    </div>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const text = $('text'), count = $('count'), go = $('go'), err = $('err'),
+      result = $('result'), player = $('player'), download = $('download');
+
+count.textContent = text.value.length;
+text.addEventListener('input', () => count.textContent = text.value.length);
+
+const speed = $('speed');
+speed.addEventListener('input', () => $('speedVal').textContent = (+speed.value).toFixed(1) + '×');
+
+// AI enhancement: ask the backend (OpenAI gpt-4o-mini) to polish pacing.
+const enhance = $('enhance');
+enhance.addEventListener('click', async () => {
+  if (!text.value.trim()) return;
+  err.textContent = '';
+  enhance.disabled = true; const label = enhance.innerHTML;
+  enhance.textContent = 'Enhancing…';
+  try {
+    const r = await fetch('/api/enhance', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text.value })
+    });
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    text.value = (await r.json()).enhanced;
+    count.textContent = text.value.length;
+  } catch (e) {
+    err.textContent = 'Enhance error: ' + e.message;
+  } finally {
+    enhance.disabled = false; enhance.innerHTML = label;
+  }
+});
+
+// Load Kokoro voice list.
+fetch('/api/voices').then(r => r.ok ? r.json() : null).then(data => {
+  const voices = data?.voices || [];
+  if (!Array.isArray(voices) || !voices.length) return;
+  const sel = $('voiceId');
+  sel.innerHTML = '';
+  voices.forEach(v => {
+    const o = document.createElement('option');
+    o.value = v.voiceId;
+    o.textContent = v.displayName || v.voiceId;
+    sel.appendChild(o);
+  });
+}).catch(() => {});
+
+go.addEventListener('click', async () => {
+  err.textContent = ''; result.classList.remove('show');
+  go.disabled = true; go.textContent = 'Generating…';
+  try {
+    const body = {
+      text: text.value,
+      voiceId: $('voiceId').value,
+      speed: parseFloat(speed.value)
+    };
+    const r = await fetch('/api/synthesize', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    const data = await r.json();
+    player.src = data.dataUrl;
+    download.href = data.dataUrl;
+    result.classList.add('show');
+    player.play().catch(() => {});
+  } catch (e) {
+    err.textContent = 'Error: ' + e.message;
+  } finally {
+    go.disabled = false; go.textContent = 'Generate speech';
+  }
+});
+</script>
+</body>
+</html>

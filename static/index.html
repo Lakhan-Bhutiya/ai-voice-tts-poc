@@ -3,143 +3,136 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AI Voice — Human-like TTS POC</title>
-<style>
-  :root { --bg:#0e0f1a; --panel:#1a1c2e; --accent:#7c5cff; --accent2:#46e0c8; --text:#e8e9f3; --muted:#9aa0b4; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family:'Segoe UI',system-ui,sans-serif; background:radial-gradient(1200px 600px at 70% -10%, #25264a, var(--bg)); color:var(--text); min-height:100vh; }
-  .wrap { max-width:780px; margin:0 auto; padding:40px 20px 80px; }
-  h1 { font-size:28px; margin:0 0 4px; }
-  h1 span { background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .sub { color:var(--muted); margin:0 0 28px; font-size:14px; }
-  .card { background:var(--panel); border:1px solid #2a2d45; border-radius:16px; padding:22px; box-shadow:0 10px 40px rgba(0,0,0,.35); }
-  label { display:block; font-size:13px; color:var(--muted); margin:16px 0 6px; font-weight:600; letter-spacing:.02em; }
-  textarea, select, input { width:100%; background:#12131f; border:1px solid #2f3354; color:var(--text); border-radius:10px; padding:12px 14px; font-size:15px; font-family:inherit; }
-  textarea { resize:vertical; min-height:120px; }
-  .row { display:flex; gap:14px; }
-  .row > div { flex:1; }
-  .count { float:right; font-size:12px; color:var(--muted); }
-  button { margin-top:22px; width:100%; padding:14px; border:none; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer;
-           background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#0e0f1a; transition:transform .08s, opacity .2s; }
-  button:hover:not(:disabled) { transform:translateY(-1px); }
-  button:disabled { opacity:.5; cursor:not-allowed; }
-  button.ghost { width:auto; margin-top:10px; padding:9px 16px; font-size:14px; font-weight:600;
-                 background:transparent; color:var(--accent2); border:1px solid #34386083; }
-  button.ghost:hover:not(:disabled) { border-color:var(--accent2); background:#1a2230; }
-  button.ghost .hint { color:var(--muted); }
-  .result { margin-top:22px; display:none; }
-  .result.show { display:block; }
-  audio { width:100%; margin-top:8px; }
-  .dl { display:inline-block; margin-top:12px; color:var(--accent2); text-decoration:none; font-size:14px; font-weight:600; }
-  .err { color:#ff7a7a; font-size:14px; margin-top:14px; white-space:pre-wrap; }
-  .chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
-  .chip { background:#222542; border:1px solid #34386083; color:var(--muted); padding:6px 12px; border-radius:20px; font-size:13px; cursor:pointer; }
-  .chip:hover { color:var(--text); border-color:var(--accent); }
-  .hint { font-weight:400; color:#717691; text-transform:none; letter-spacing:0; }
-</style>
+<title>aivoice — human-like speech synthesis</title>
+<meta name="description" content="Speech synthesis on your own machine, powered by the local Kokoro model." />
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="/static/css/tokens.css">
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/components.css">
 </head>
 <body>
-<div class="wrap">
-  <h1><span>AI Voice</span> — Human-like TTS</h1>
-  <p class="sub">Powered by the local <strong>Kokoro</strong> model · runs on-device, no TTS API · proof of concept</p>
 
-  <div class="card">
-    <label>Text to speak <span class="count"><span id="count">0</span>/2000</span></label>
-    <textarea id="text" maxlength="2000" placeholder="Type something for the voice to say...">Hey there! This is a quick demo of human-like speech generation. Pretty natural, right?</textarea>
-    <button id="enhance" class="ghost">✨ Enhance with AI <span class="hint">— polish pacing &amp; punctuation for a natural read</span></button>
+<div class="app-shell">
 
-    <div class="row">
-      <div>
-        <label>Voice</label>
-        <select id="voiceId"><option value="af_heart">Heart (US, female)</option></select>
+  <header class="app-header">
+    <div class="brand"><span class="mark"></span>aivoice</div>
+    <span class="micro header-spec">Kokoro 82M · On-device · No API calls</span>
+    <div class="header-meta">
+      <div class="status-chip" role="status" aria-live="polite">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Checking…</span>
       </div>
-      <div>
-        <label>Speed <span class="hint" id="speedVal">1.0×</span></label>
-        <input id="speed" type="range" min="0.5" max="2" step="0.1" value="1" />
-      </div>
+      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch to dark theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
     </div>
+  </header>
 
-    <button id="go">Generate speech</button>
-
-    <div class="result" id="result">
-      <audio id="player" controls></audio><br>
-      <a class="dl" id="download" download="speech.wav">⬇ Download audio</a>
-    </div>
-    <div class="err" id="err"></div>
+  <div class="hero-strip">
+    <h1 class="hero-line-compact">Speech that <span class="text-fade">sounds human.</span></h1>
+    <span class="micro">AV-01</span>
   </div>
+
+  <div class="notice notice-block d-none" id="modelMissingNotice">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <span>Model weights weren't found in <code>models/</code>. Follow the download steps in
+      <strong>README.md</strong> before generating speech.</span>
+  </div>
+
+  <div class="studio-grid">
+    <div class="panel script-panel">
+      <div class="panel-head">
+        <h2 class="section-title"><span class="index">01</span>Script</h2>
+        <span class="micro"><span id="wordCount">0</span>/300 words</span>
+      </div>
+
+      <textarea id="scriptText" class="script-field" maxlength="2000"
+        placeholder="Type something for the voice to say…">Hey there! This is a quick demo of human-like speech generation. Pretty natural, right?</textarea>
+
+      <div class="field-foot">
+        <div class="preset-pills">
+          <button type="button" class="pill" data-preset="greeting">Greeting</button>
+          <button type="button" class="pill" data-preset="narration">Narration</button>
+          <button type="button" class="pill" data-preset="adread">Ad read</button>
+        </div>
+        <button type="button" class="btn-enhance" id="enhanceBtn">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>Enhance with AI
+        </button>
+      </div>
+
+      <div class="diff-panel d-none" id="diffPanel">
+        <div class="diff-head">
+          <span class="micro">Punctuation &amp; pacing changes</span>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn-revert" id="revertBtn">Revert</button>
+            <button type="button" class="btn-revert" id="dismissDiffBtn">Dismiss</button>
+          </div>
+        </div>
+        <div id="diffContent"></div>
+      </div>
+
+      <div class="orb-well" id="orbWell">
+        <canvas id="orbCanvas" aria-hidden="true"></canvas>
+      </div>
+    </div>
+
+    <div class="panel voice-panel">
+      <div class="panel-head">
+        <h2 class="section-title"><span class="index">02</span>Voice</h2>
+        <span class="voice-count" id="voiceCount">00 · 00</span>
+      </div>
+
+      <div class="filter-pills" id="voiceFilters"></div>
+      <div class="voice-list" id="voiceList" role="listbox" aria-label="Voice"></div>
+
+      <div class="speed-row">
+        <div class="d-flex justify-content-between align-items-baseline">
+          <span class="micro">Speed</span>
+          <span class="speed-value" id="speedValue">1.0×</span>
+        </div>
+        <input type="range" class="speed-slider" id="speedSlider" min="0.5" max="2" step="0.1" value="1"
+          aria-label="Playback speed">
+        <div class="speed-scale"><span>0.5×</span><span>2.0×</span></div>
+      </div>
+    </div>
+
+    <div class="panel history-panel">
+      <div class="panel-head">
+        <h2 class="section-title"><span class="index">03</span>History</h2>
+        <span class="voice-count" id="historyCount">00 · 10</span>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </div>
+
+  <div class="action-block" id="actionBlock">
+    <button type="button" class="btn-circle" id="playBtn" aria-label="Generate speech">
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
+    <div class="action-body">
+      <span class="action-label" id="actionLabel">Ready to generate</span>
+      <div class="wave-wrap">
+        <canvas id="waveCanvas" aria-hidden="true"></canvas>
+      </div>
+      <div class="wave-time"><span id="timeCurrent">0:00</span><span id="timeTotal">0:00</span></div>
+    </div>
+    <div class="action-controls d-none" id="actionControls">
+      <button type="button" class="btn-transport" id="downloadBtn" aria-label="Download WAV">
+        <i class="fa-solid fa-download"></i>
+      </button>
+      <button type="button" class="btn-transport" id="regenBtn" aria-label="Regenerate speech">
+        <i class="fa-solid fa-rotate-right"></i>
+      </button>
+    </div>
+  </div>
+
 </div>
 
-<script>
-const $ = id => document.getElementById(id);
-const text = $('text'), count = $('count'), go = $('go'), err = $('err'),
-      result = $('result'), player = $('player'), download = $('download');
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer" style="z-index: 1080;"></div>
 
-count.textContent = text.value.length;
-text.addEventListener('input', () => count.textContent = text.value.length);
-
-const speed = $('speed');
-speed.addEventListener('input', () => $('speedVal').textContent = (+speed.value).toFixed(1) + '×');
-
-// AI enhancement: ask the backend (OpenAI gpt-4o-mini) to polish pacing.
-const enhance = $('enhance');
-enhance.addEventListener('click', async () => {
-  if (!text.value.trim()) return;
-  err.textContent = '';
-  enhance.disabled = true; const label = enhance.innerHTML;
-  enhance.textContent = 'Enhancing…';
-  try {
-    const r = await fetch('/api/enhance', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: text.value })
-    });
-    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
-    text.value = (await r.json()).enhanced;
-    count.textContent = text.value.length;
-  } catch (e) {
-    err.textContent = 'Enhance error: ' + e.message;
-  } finally {
-    enhance.disabled = false; enhance.innerHTML = label;
-  }
-});
-
-// Load Kokoro voice list.
-fetch('/api/voices').then(r => r.ok ? r.json() : null).then(data => {
-  const voices = data?.voices || [];
-  if (!Array.isArray(voices) || !voices.length) return;
-  const sel = $('voiceId');
-  sel.innerHTML = '';
-  voices.forEach(v => {
-    const o = document.createElement('option');
-    o.value = v.voiceId;
-    o.textContent = v.displayName || v.voiceId;
-    sel.appendChild(o);
-  });
-}).catch(() => {});
-
-go.addEventListener('click', async () => {
-  err.textContent = ''; result.classList.remove('show');
-  go.disabled = true; go.textContent = 'Generating…';
-  try {
-    const body = {
-      text: text.value,
-      voiceId: $('voiceId').value,
-      speed: parseFloat(speed.value)
-    };
-    const r = await fetch('/api/synthesize', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-    });
-    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
-    const data = await r.json();
-    player.src = data.dataUrl;
-    download.href = data.dataUrl;
-    result.classList.add('show');
-    player.play().catch(() => {});
-  } catch (e) {
-    err.textContent = 'Error: ' + e.message;
-  } finally {
-    go.disabled = false; go.textContent = 'Generate speech';
-  }
-});
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="/static/js/app.js"></script>
 </body>
 </html>

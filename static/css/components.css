@@ -1,0 +1,762 @@
+/* ============================= Header ============================= */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 0;
+  flex-shrink: 0;
+}
+
+.header-spec {
+  color: var(--ink-3);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  letter-spacing: -0.02em;
+}
+.brand .mark {
+  width: 9px;
+  height: 9px;
+  background: var(--accent);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.status-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink-2);
+}
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-4);
+  flex-shrink: 0;
+}
+.status-dot.ok { background: #2fa84f; }
+.status-dot.warn { background: #e0a527; }
+.status-dot.err { background: var(--danger); }
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.theme-toggle:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-2);
+}
+
+/* ============================= Hero strip ============================= */
+.hero-strip {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.hero-line-compact {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-hero-compact);
+  letter-spacing: var(--tracking-display);
+  line-height: 1.1;
+  margin: 0;
+}
+/* De-emphasized text uses .text-fade (base.css), not .fade — Bootstrap
+   owns .fade as its show/hide transition utility (opacity:0 unless .show
+   is also present), which silently hid this span until this was found. */
+
+/* ============================= Panels ============================= */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+.panel-head .index {
+  color: var(--accent);
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+/* ============================= Studio grid (history | script | voice) =============================
+   Three columns, each spanning the full row height — nobody splits height
+   with anybody else, which is what made Voice (and then History) feel
+   cramped in earlier iterations. Named areas also make the narrow-screen
+   reflow (Script, Voice, History) trivial without touching DOM order. */
+.studio-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 0.9fr 1.4fr 0.9fr;
+  grid-template-areas: "history script voice";
+  flex-shrink: 0;
+}
+
+.script-panel {
+  grid-area: script;
+  min-width: 0;
+}
+
+.voice-panel {
+  grid-area: voice;
+  min-width: 0;
+}
+
+.history-panel {
+  grid-area: history;
+  min-width: 0;
+}
+
+.orb-well {
+  margin-top: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--orb-bg);
+  position: relative;
+  overflow: hidden;
+  min-height: 90px;
+}
+.orb-well canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@media (min-width: 992px) and (min-height: 700px) {
+  .studio-grid {
+    flex: 1;
+    min-height: 0;
+    /* Bare `fr` tracks default to a minmax(auto, ...) floor, so the row
+       won't grow to fill leftover space on its own — it needs the explicit
+       0 floor to actually stretch to the container's full height. */
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .script-panel,
+  .voice-panel,
+  .history-panel {
+    min-height: 0;
+  }
+  .orb-well {
+    flex: 1;
+    min-height: 44px;
+  }
+}
+
+/* ============================= Script / textarea ============================= */
+.script-field {
+  width: 100%;
+  min-height: 168px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  padding: 14px 16px;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.script-field:focus {
+  border-color: var(--line-strong);
+  outline: none;
+}
+.script-field::placeholder {
+  color: var(--ink-3);
+}
+
+.field-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.preset-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+  white-space: nowrap;
+}
+.pill:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+.pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-enhance {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  padding: 6px 2px;
+  cursor: pointer;
+}
+.btn-enhance i { color: var(--accent); }
+.btn-enhance:hover:not(:disabled) { color: var(--accent); }
+.btn-enhance:disabled {
+  color: var(--ink-4);
+  cursor: not-allowed;
+}
+.btn-enhance:disabled i { color: var(--ink-4); }
+.btn-enhance .spinner-border {
+  width: 0.85em;
+  height: 0.85em;
+  border-width: 2px;
+}
+
+/* ============================= Enhance diff panel ============================= */
+.diff-panel {
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  background: var(--surface-2);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+.diff-panel .diff-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.diff-ins {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-radius: 3px;
+  padding: 0 2px;
+}
+.diff-del {
+  color: var(--ink-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--ink-4);
+}
+.btn-revert {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-revert:hover { color: var(--ink); border-color: var(--line-strong); }
+
+/* ============================= Voice filters & list ============================= */
+.filter-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.filter-pills .pill {
+  padding: 6px 12px;
+}
+
+.voice-count {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--ink-3);
+  letter-spacing: var(--tracking-micro);
+}
+
+.voice-list {
+  overflow-y: auto;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.history-list {
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+@media (min-width: 992px) and (min-height: 700px) {
+  .voice-list,
+  .history-list {
+    flex: 1;
+    min-height: 0;
+  }
+  .history-list {
+    min-height: 90px;
+  }
+  .script-field {
+    resize: none;
+    min-height: 140px;
+  }
+}
+
+.voice-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  border-left: 2px solid transparent;
+  background: transparent;
+  padding: 11px 10px 11px 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.voice-card:hover {
+  background: var(--surface-2);
+}
+.voice-card.selected {
+  border-left-color: var(--accent);
+  background: var(--surface-2);
+}
+.voice-card.hidden {
+  display: none;
+}
+
+.voice-monogram {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--ink-4);
+  color: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  transition: background var(--dur-fast) var(--ease);
+}
+.voice-card.selected .voice-monogram {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.voice-info {
+  flex: 1;
+  min-width: 0;
+}
+.voice-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--ink);
+}
+.voice-badges {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+.badge-tag {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+}
+.badge-tag::after {
+  content: "·";
+  margin-left: 6px;
+  color: var(--ink-4);
+}
+.badge-tag:last-child::after {
+  content: "";
+}
+
+.voice-card .fa-check {
+  color: var(--accent);
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.voice-card.selected .fa-check {
+  opacity: 1;
+}
+
+/* ============================= Speed slider ============================= */
+.speed-row {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.speed-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+input[type="range"].speed-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: var(--line-strong);
+  border-radius: var(--radius-pill);
+  margin: 14px 0 6px;
+}
+input[type="range"].speed-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 3px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+input[type="range"].speed-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 3px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.speed-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+  letter-spacing: var(--tracking-micro);
+}
+
+/* ============================= Action block (player) ============================= */
+.action-block {
+  background: var(--block);
+  color: var(--block-ink);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 96px;
+  flex-shrink: 0;
+}
+
+.btn-circle {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+}
+/* fa-arrow-up-right is Font Awesome Pro-only and silently renders nothing
+   in the free set — rotate the free fa-arrow-up instead to get the same
+   diagonal glyph. Don't reintroduce -up-right without checking the CDN CSS. */
+.btn-circle .fa-arrow-up {
+  transform: rotate(45deg);
+}
+.btn-circle:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+.btn-circle:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.btn-circle .spinner-border {
+  width: 1.1em;
+  height: 1.1em;
+  border-width: 2px;
+}
+
+.action-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.action-label {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--block-ink-3);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.wave-wrap {
+  position: relative;
+  width: 100%;
+  height: 44px;
+}
+.wave-wrap canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: pointer;
+}
+
+.wave-time {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-micro);
+  color: var(--block-ink-3);
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.action-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.btn-transport {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(246, 245, 242, 0.2);
+  background: transparent;
+  color: var(--block-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.btn-transport:hover:not(:disabled) {
+  background: rgba(246, 245, 242, 0.12);
+  border-color: rgba(246, 245, 242, 0.35);
+}
+.btn-transport:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ============================= History ============================= */
+.history-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 4px;
+  border-bottom: 1px solid var(--line);
+}
+.history-row:first-child {
+  border-top: 1px solid var(--line);
+}
+.history-index {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink-3);
+  width: 22px;
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+}
+.history-text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+.history-voice {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink-3);
+  flex-shrink: 0;
+  width: 90px;
+}
+.history-speed {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+  width: 42px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.history-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.btn-icon-sm {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.btn-icon-sm:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.history-empty {
+  padding: 24px 4px;
+  color: var(--ink-3);
+  font-size: 0.875rem;
+}
+
+/* ============================= Toasts ============================= */
+.toast {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-md);
+}
+.toast .toast-body {
+  font-size: 0.875rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.toast.error-toast .toast-body i {
+  color: var(--danger);
+  margin-top: 2px;
+}
+
+/* ============================= Notice / banner ============================= */
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+  background: var(--surface-2);
+}
+.notice i {
+  color: var(--accent);
+  margin-top: 1px;
+}
+.notice.notice-block {
+  flex-shrink: 0;
+}
+
+/* ============================= Responsive ============================= */
+/* Below this, the no-scroll studio (base.css) reverts to ordinary document
+   flow, so the fixed two-column grid and internal-only scrolling would just
+   fight the page — stack to one column and let the lists cap at a sane
+   height instead. */
+@media (max-width: 991.98px), (max-height: 699.98px) {
+  .studio-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "script"
+      "voice"
+      "history";
+  }
+  .voice-list,
+  .history-list {
+    max-height: 240px;
+  }
+  .orb-well {
+    min-height: 140px;
+  }
+  .header-spec {
+    display: none;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .action-block {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .action-block {
+    padding: 16px;
+  }
+  .btn-circle {
+    width: 44px;
+    height: 44px;
+  }
+  .history-voice {
+    display: none;
+  }
+}

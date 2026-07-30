@@ -1,0 +1,183 @@
+/* Self-hosted type. Woff2 files live in /static/fonts (downloaded once from
+   Fontshare) so the design doesn't depend on an external font host. */
+@font-face {
+  font-family: "General Sans";
+  src: url("/static/fonts/GeneralSans-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/static/fonts/GeneralSans-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/static/fonts/GeneralSans-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/static/fonts/Satoshi-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/static/fonts/Satoshi-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/static/fonts/Satoshi-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Bootstrap variable remap — utilities/offcanvas/toast inherit our system
+   instead of Bootstrap's defaults, so we can use them without fighting them. */
+:root {
+  --bs-body-bg: var(--paper);
+  --bs-body-color: var(--ink);
+  --bs-body-font-family: var(--font-body);
+  --bs-body-font-size: var(--fs-body);
+  --bs-border-color: var(--line);
+  --bs-border-radius: var(--radius-md);
+  --bs-border-radius-sm: var(--radius-sm);
+  --bs-border-radius-lg: var(--radius-lg);
+  --bs-border-radius-pill: var(--radius-pill);
+  --bs-link-color-rgb: 255, 74, 18;
+  --bs-emphasis-color: var(--ink);
+  --bs-secondary-color: var(--ink-2);
+  --bs-tertiary-bg: var(--surface-2);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+}
+html[data-bs-theme="dark"] {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  margin: 0;
+  color: var(--ink);
+}
+
+.display {
+  font-size: var(--fs-display);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+  line-height: 0.96;
+}
+
+.section-title {
+  font-size: var(--fs-section);
+  font-weight: 600;
+  letter-spacing: var(--tracking-section);
+}
+
+.micro {
+  font-family: var(--font-body);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink-3);
+}
+
+.text-muted-2 {
+  color: var(--ink-2);
+}
+.text-muted-3 {
+  color: var(--ink-3);
+}
+.text-fade {
+  color: var(--ink-4);
+}
+
+.app-shell {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* No-scroll studio layout: the whole viewport becomes one fixed-height flex
+   column, so only the voice/history lists (and, on generate, the orb) ever
+   move. Below this breakpoint the shell reverts to ordinary document flow
+   and the page scrolls — cramming the fixed layout into a short or narrow
+   viewport would shrink type past legibility, so it isn't attempted there. */
+@media (min-width: 992px) and (min-height: 700px) {
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+  .app-shell {
+    height: 100%;
+    min-height: 0;
+  }
+}
+
+.hairline {
+  border-color: var(--line) !important;
+}
+
+/* Focus ring, consistent across custom controls */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
